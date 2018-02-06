@@ -93,11 +93,7 @@ if app.args.analysis_level == 'participant1':
 
         # Stuff DWI gradients in *.mif file
         dwi_mrtrix_file = os.path.join(app.tempDir, subject_label + '_dwi.mif')
-        print(dwi_mrtrix_file)
-        # run.command('mrconvert ' + all_dwi_images[0] + grad_import_option + ' ' + dwi_mrtrix_file)
-        # dwi_biascorrect_file = os.path.join(app.tempDir, subject_label + 'dwi_biascorr.mif')
-        print('mrconvert command ...... ')
-        print('mrconvert ' + all_dwi_images[0] + grad_import_option + ' ' + dwi_mrtrix_file)
+        run.command('mrconvert ' + all_dwi_images[0] + grad_import_option + ' ' + dwi_mrtrix_file)
         dwi_biascorrect_file = os.path.join(app.tempDir, subject_label + '_dwi_biascorr.mif')
         # run.command('dwibiascorrect' + ' -ants ' + dwi_mrtrix_file + ' ' + dwi_denoised_file)
         print('bias correction ......... ')
