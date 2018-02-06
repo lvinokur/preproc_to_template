@@ -60,7 +60,7 @@ app.makeTempDir()
 if app.args.analysis_level == 'participant1':
     for subject_label in subjects_to_analyze:
         label = 'sub-' + subject_label
-        print('running basic pre-processing for ' + label)
+        print('running bias correction and rf estimation for ' + label)
 
         # Read DWI(s) in BIDS folder
         all_dwi_images = glob.glob(os.path.join(app.args.in_dir, label, '*dwi', '*_dwi.nii*'))
@@ -93,17 +93,13 @@ if app.args.analysis_level == 'participant1':
 
         # Stuff DWI gradients in *.mif file
         dwi_mrtrix_file = os.path.join(app.tempDir, subject_label + '_dwi.mif')
-        run.command('mrconvert ' + all_dwi_images[0] + grad_import_option + ' ' + dwi_mrtrix_file)
-        dwi_biascorrect_file = os.path.join(app.tempDir, subject_label + '_dwi_biascorr.mif')
-        # run.command('dwibiascorrect' + ' -ants ' + dwi_mrtrix_file + ' ' + dwi_denoised_file)
-        print('bias correction ......... ')
-        print('dwibiascorrect' + ' -ants ' + dwi_mrtrix_file + ' ' + dwi_biascorrect_file)
+        run.command('mrconvert ' + all_dwi_images[0] + grad_import_option + ' ' + dwi_mrtrix_file + ' -force')
+
+        dwi_biascorrect_file = os.path.join(subject_dir, subject_label + '_dwi_biascorr.mif')
+        run.command('dwibiascorrect' + dwi_mrtrix_file + ' ' + dwi_biascorrect_file + ' -ants ' + ' -force')
+
         # Estimate WM, GM, CSF response functions
-        # run.command('dwi2response ' + app.numThreads + ' dhollander ' + dwi_preproc_file + ' ' + wm_response_file + ' '
-        #                                                                                           + gm_response_file + ' '
-        #                                                                                           + csf_response_file + app.force)
-        print('response estimation ..... ')
-        print('dwi2response ' + ' dhollander ' + dwi_biascorrect_file + ' ' + wm_response_file + ' ' + gm_response_file + ' ' + csf_response_file)
+        run.command('dwi2response ' + ' dhollander ' + dwi_biascorrect_file + ' ' + wm_response_file + ' ' + gm_response_file + ' ' + csf_response_file + ' -force')
 
 # running group level 1 (average response functions) TODO check for user supplied subset to ensure response is not biased
 elif app.args.analysis_level == "group1":
