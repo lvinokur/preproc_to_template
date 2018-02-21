@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y g++-5
 RUN wget -O- http://neuro.debian.net/lists/trusty.au.full | tee /etc/apt/sources.list.d/neurodebian.sources.list
 RUN apt-key adv --recv-keys --keyserver hkp://pgp.mit.edu:80 0xA5D32F012649A5A9 && apt-get update
 
+
 # fsl
 RUN apt-get install -y ants
 RUN apt-get install -y fsl-5.0-core
@@ -49,14 +50,13 @@ ENV PYTHONPATH=/mrtrix3/lib
 
 
 
-RUN mkdir /hcp_input
-RUN mkdir /bids_output
+RUN mkdir /in
+RUN mkdir /out
 RUN mkdir /hsm
 RUN mkdir /scratch
 RUN mkdir /vlsci
 
-COPY coeff_SC72C_Skyra.grad /Pipelines/global/config/coeff_SC72C_Skyra.grad
-COPY HCP_preproc.py /code/run.py
+COPY preproc_to_template.py /code/run.py
 RUN chmod 775 /code/run.py
 
 ENTRYPOINT ["/code/run.py"]
