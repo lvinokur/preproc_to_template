@@ -44,14 +44,8 @@ ENV LD_LIBRARY_PATH=/usr/lib/fsl/5.0
 ENV PATH=/usr/lib/fsl/5.0:/usr/lib/ants:/mrtrix3/bin:$PATH
 ENV PYTHONPATH=/mrtrix3/lib
 
-
-
-
-
-
-
-RUN mkdir /in
-RUN mkdir /out
+RUN mkdir /input
+RUN mkdir /output
 RUN mkdir /hsm
 RUN mkdir /scratch
 RUN mkdir /vlsci

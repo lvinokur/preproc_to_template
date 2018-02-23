@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os, glob, shutil, sys, inspect, errno
 
 from distutils.spawn import find_executable
@@ -30,6 +32,8 @@ app.cmdline.add_argument('--participant_label', help='The label(s) of the partic
                                                  'provided all subjects should be analyzed. Multiple '
                                                  'participants can be specified with a space separated list.',
                                                   nargs='+')
+app.cmdline.add_argument('--no_denoise', action='store_false', help='Do not perform denoising and unringing')
+
 app.parse()
 
 if app.isWindows():
