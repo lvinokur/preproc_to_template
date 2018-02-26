@@ -32,8 +32,6 @@ app.cmdline.add_argument('--participant_label', help='The label(s) of the partic
                                                  'provided all subjects should be analyzed. Multiple '
                                                  'participants can be specified with a space separated list.',
                                                   nargs='+')
-app.cmdline.add_argument('--no_denoise', action='store_false', help='Do not perform denoising and unringing')
-
 app.parse()
 
 if app.isWindows():
@@ -261,3 +259,5 @@ elif app.args.analysis_level == 'group2':
 
 else:
     app.error('no valid analysis level specified')
+
+app.complete()
