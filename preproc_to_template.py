@@ -194,6 +194,8 @@ elif app.args.analysis_level == "participant2":
         subject_dir = os.path.join(all_subjects_dir, subject_label)
         output_mask = os.path.join(subject_dir, 'mask.mif')
         app.checkOutputPath(output_mask)
+        dilated_mask = os.path.join(subject_dir, 'dmask.mif')
+        app.checkOutputPath(dilated_mask)
         output_fod = os.path.join(subject_dir, 'fod.mif')
         app.checkOutputPath(output_fod)
         output_gm = os.path.join(subject_dir, 'gm.mif')
@@ -211,19 +213,19 @@ elif app.args.analysis_level == "participant2":
 
         input_to_csd = os.path.join(subject_dir, subject_label + '_dwi_biascorr.mif')
         # Compute brain mask
-        print('dwi2mask ' + input_to_csd + ' ' + output_mask + ' -force')
         run.command('dwi2mask ' + input_to_csd + ' ' + output_mask + ' -force')
 
 
         #TODO add dilate mask by a voxel or two
+        run.command('maskfilter ' +  output_mask + ' dilate -npass 2 ' + dilated_mask + ' -force')
 
         # Perform CSD
-        run.command('dwi2fod msmt_csd ' + input_to_csd + ' -mask ' + output_mask + ' ' +
+        run.command('dwi2fod msmt_csd ' + input_to_csd + ' -mask ' + dilated_mask + ' ' +
                     os.path.join(app.args.output_dir, 'average_wm_response.txt') + ' ' +  os.path.join(app.tempDir, subject_label + 'fod.mif') + ' ' +
                     os.path.join(app.args.output_dir, 'average_gm_response.txt') + ' ' + os.path.join(app.tempDir, subject_label + 'gm.mif') + ' ' +
                     os.path.join(app.args.output_dir, 'average_csf_response.txt') + ' ' + os.path.join(app.tempDir, subject_label + 'csf.mif'))
 
-        run.command('mtnormalise -mask ' + output_mask + ' -check_norm ' +  os.path.join(subject_dir, 'chk_norm.mif') + ' ' +
+        run.command('mtnormalise -mask ' + dilated_mask + ' -check_norm ' +  os.path.join(subject_dir, 'chk_norm.mif') + ' ' +
                                            os.path.join(app.tempDir, subject_label + 'fod.mif') + ' ' + output_fod + ' ' +
                                            os.path.join(app.tempDir, subject_label + 'gm.mif')  + ' ' + output_gm  + ' ' +
                                            os.path.join(app.tempDir, subject_label + 'csf.mif') + ' ' + output_csf + ' -force')
