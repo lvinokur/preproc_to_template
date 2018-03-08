@@ -209,7 +209,7 @@ elif app.args.analysis_level == "participant2":
         voxel_sizes = image.Header(os.path.join(subject_dir, subject_label + '_dwi_biascorr.mif')).spacing()
         mean_voxel_size = 0.0
         for i in range(0,3):
-          mean_voxel_size = mean_voxel_size + float(voxel_sizes[i]) / 3.0
+          mean_voxel_size = mean_voxel_size + float(voxel_sizes[) / 3.0
 
         input_to_csd = os.path.join(subject_dir, subject_label + '_dwi_biascorr.mif')
         # Compute brain mask
@@ -249,7 +249,7 @@ elif app.args.analysis_level == 'group2':
 
     # Compute FOD template
     run.command('population_template fod_input -mask mask_input ' + os.path.join(app.tempDir, 'tmp.mif') + ' -warp_dir ' +  os.path.join(app.tempDir, 'warps'))
-    run.command('mrconvert ' + os.path.join(app.tempDir, 'tmp.mif') + ' -header_set made_from_subset false ' + fod_template + ' -force')
+    run.command('mrconvert ' + os.path.join(app.tempDir, 'tmp.mif') + ' -set_property made_from_subset false ' + fod_template + ' -force')
     # Save all warps since we don't need to generate them in the next step if all subjects were used to make the template
     for subj in [os.path.basename(x) for x in glob.glob(os.path.join(all_subjects_dir, '*'))]:
         run.command('warpconvert -template ' + fod_template + ' '
