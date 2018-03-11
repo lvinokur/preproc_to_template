@@ -209,7 +209,7 @@ elif app.args.analysis_level == "participant2":
         voxel_sizes = image.Header(os.path.join(subject_dir, subject_label + '_dwi_biascorr.mif')).spacing()
         mean_voxel_size = 0.0
         for i in range(0,3):
-          mean_voxel_size = mean_voxel_size + float(voxel_sizes[) / 3.0
+          mean_voxel_size = mean_voxel_size + float(voxel_sizes[i]) / 3.0
 
         input_to_csd = os.path.join(subject_dir, subject_label + '_dwi_biascorr.mif')
         # Compute brain mask
