@@ -16,7 +16,7 @@ app.cmdline.add_argument('output_dir', help='The directory where the output file
                                          'this folder should be prepopulated with the results of the '
                                          'participant level analysis.')
 
-analysis_level_choices = ['participant1', 'group1', 'participant2', 'group2']
+analysis_level_choices = ['participant1', 'group1', 'participant2', 'group2', 'participant3']
 
 app.cmdline.add_argument('analysis_level', help='Level of the analysis that will be performed. '
                                                    'Valid choices are: [' + ', '.join(analysis_level_choices) + ']. \nMultiple participant '
@@ -258,6 +258,24 @@ elif app.args.analysis_level == 'group2':
         run.command('warpconvert -from 2 -template ' + os.path.join(all_subjects_dir, subj, 'fod.mif') + ' '
                               + os.path.join(app.tempDir, 'warps', subj + '.mif') + ' ' + warpfull2deformation + ' '
                               + os.path.join(all_subjects_dir, subj, 'template2subject_warp.mif') + ' -force')
+
+elif app.args.analysis_level == 'participant3':
+      num_tracks = 100000000;
+      if app.args.num_tracks:
+          num_tracks = int(app.args.num_tracks)
+
+    #TODO compute voxel mask?
+    #TODO compute fixel mask?
+
+    #TODO perform tractography - act, 5tt, 250 length, chech curvature, -cutoff 0.06
+    #TODO apply sift
+
+  # Perform tractography on the FOD template
+  run.command('tckgen -angle 22.5 -maxlen 250 -minlen 10 -power 1.0 ' + fod_template + ' -seed_image '
+             + voxel_mask + ' -mask ' + voxel_mask + ' -number ' + str(num_tracks) + ' ' + tracks + app.force)
+
+  # SIFT the streamlines
+  run.command('tcksift ' + tracks + ' ' + fod_template + ' -term_number ' + str(num_tracks_sift) + ' ' + tracks_sift + app.force)
 
 else:
     app.error('no valid analysis level specified')
