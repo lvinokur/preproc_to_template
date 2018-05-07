@@ -277,26 +277,23 @@ elif app.args.analysis_level == 'participant3':
         fod = os.path.join(subject_dir, 'fod.mif')
         t1 = os.path.join(subject_dir, 'T1w_acpc_dc_restore_brain.mif')
         parc = os.path.join(subject_dir, 'aparc+aseg.mif')
-        fivett = os.path.join(subject_dir, '5TT.mif')
-        app.checkOutputPath(fivett)
+        five_tt = os.path.join(subject_dir, '5TT.mif')
         tractogram = os.path.join(subject_dir, 'tractogram.tck')
-        app.checkOutputPath(tracktogram)
         tck_weights = os.path.join(subject_dir, 'fod_weights.csv')
-        app.checkOutputPath(tck_weights)
         mu_file = os.path.join(subject_dir, 'mu.txt')
         tdi_file = os.path.join(subject_dir, 'tdi.mif')
         # compute 5tt
-        run.command('5ttgen fsl ' + t1 + ' ' + fivett_img + ' -force')
+        run.command('5ttgen fsl ' + t1 + ' ' + five_tt + ' -force')
 
         # perform tractography - act, 5tt, 250 length, chech curvature, -cutoff 0.06, -backtrack
-        run.command('tckgen ' + fod + ' ' + tractogram + ' -act ' + fivett + ' -backtrack -cutoff 0.06 -maxlength 250 -select ' +
+        run.command('tckgen ' + fod + ' ' + tractogram + ' -act ' + five_tt + ' -backtrack -cutoff 0.06 -maxlength 250 -select ' +
                      str(num_tracks) + ' -seed_dynamic ' + fod + ' -force')
 
 
         # apply sift
-        run.command('tcksift2 ' + tractogram + ' ' + tck_weights + ' -act ' +  fivett + ' -out_mu ' + mu_file + ' -force')
+        run.command('tcksift2 ' + tractogram + ' ' + tck_weights + ' -act ' +  five_tt + ' -out_mu ' + mu_file + ' -force')
 
-        #generate TDI
+        # generate TDI
         with open(mu_file, 'r') as f:
           mu = float(f.read())
         run.command('tckmap ' + tractogram + ' -tck_weights_in ' + tck_weights + ' -template ' + fod + ' -precise - | mrcalc - ' + str(mu) + ' -mult ' + tdi_file + ' -force')
