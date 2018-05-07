@@ -32,6 +32,12 @@ app.cmdline.add_argument('--participant_label', help='The label(s) of the partic
                                                  'provided all subjects should be analyzed. Multiple '
                                                  'participants can be specified with a space separated list.',
                                                   nargs='+')
+app.cmdline.add_argument('--num_tracks', type=int, default='20000000', help='define the number of streamlines to be computed '
+                                                                        'when performing tractography on the FOD template. '
+                                                                        '(participant3 analysis level only)')
+
+
+
 app.parse()
 
 if app.isWindows():
@@ -260,22 +266,42 @@ elif app.args.analysis_level == 'group2':
                               + os.path.join(all_subjects_dir, subj, 'template2subject_warp.mif') + ' -force')
 
 elif app.args.analysis_level == 'participant3':
-      num_tracks = 100000000;
-      if app.args.num_tracks:
-          num_tracks = int(app.args.num_tracks)
+    print ('Generating whole brain tractogram')
+    num_tracks = 20000000;
+    if app.args.num_tracks:
+        num_tracks = int(app.args.num_tracks)
+    for subject_label in subjects_to_analyze:
+        print (' analysing subject -- > ', subject_label)
+        subject_dir = os.path.join(all_subjects_dir, subject_label)
+        mask = os.path.join(subject_dir, 'mask.mif')
+        fod = os.path.join(subject_dir, 'fod.mif')
+        t1 = os.path.join(subject_dir, 'T1w_acpc_dc_restore_brain.mif')
+        parc = os.path.join(subject_dir, 'aparc+aseg.mif')
+        fivett = os.path.join(subject_dir, '5TT.mif')
+        app.checkOutputPath(fivett)
+        tractogram = os.path.join(subject_dir, 'tractogram.tck')
+        app.checkOutputPath(tracktogram)
+        tck_weights = os.path.join(subject_dir, 'fod_weights.csv')
+        app.checkOutputPath(tck_weights)
+        mu_file = os.path.join(subject_dir, 'mu.txt')
+        tdi_file = os.path.join(subject_dir, 'tdi.mif')
+        # compute 5tt
+        run.command('5ttgen fsl ' + t1 + ' ' + fivett_img + ' -force')
 
-    #TODO compute voxel mask?
-    #TODO compute fixel mask?
+        # perform tractography - act, 5tt, 250 length, chech curvature, -cutoff 0.06, -backtrack
+        run.command('tckgen ' + fod + ' ' + tractogram + ' -act ' + fivett + ' -backtrack -cutoff 0.06 -maxlength 250 -select ' +
+                     str(num_tracks) + ' -seed_dynamic ' + fod + ' -force')
 
-    #TODO perform tractography - act, 5tt, 250 length, chech curvature, -cutoff 0.06
-    #TODO apply sift
 
-  # Perform tractography on the FOD template
-  run.command('tckgen -angle 22.5 -maxlen 250 -minlen 10 -power 1.0 ' + fod_template + ' -seed_image '
-             + voxel_mask + ' -mask ' + voxel_mask + ' -number ' + str(num_tracks) + ' ' + tracks + app.force)
+        # apply sift
+        run.command('tcksift2 ' + tractogram + ' ' + tck_weights + ' -act ' +  fivett + ' -out_mu ' + mu_file + ' -force')
 
-  # SIFT the streamlines
-  run.command('tcksift ' + tracks + ' ' + fod_template + ' -term_number ' + str(num_tracks_sift) + ' ' + tracks_sift + app.force)
+        #generate TDI
+        with open(mu_file, 'r') as f:
+          mu = float(f.read())
+        run.command('tckmap ' + tractogram + ' -tck_weights_in ' + tck_weights + ' -template ' + fod + ' -precise - | mrcalc - ' + str(mu) + ' -mult ' + tdi_file + ' -force')
+
+
 
 else:
     app.error('no valid analysis level specified')
