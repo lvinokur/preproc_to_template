@@ -276,6 +276,7 @@ elif app.args.analysis_level == 'participant3':
         mask = os.path.join(subject_dir, 'mask.mif')
         fod = os.path.join(subject_dir, 'fod.mif')
         t1 = os.path.join(subject_dir, 'T1w_acpc_dc_restore_brain.mif')
+        t2 = os.path.join(subject_dir, 'T2w_acpc_dc_restore_brain.mif')
         parc = os.path.join(subject_dir, 'aparc+aseg.mif')
         five_tt = os.path.join(subject_dir, '5TT.mif')
         tractogram = os.path.join(subject_dir, 'tractogram.tck')
@@ -283,7 +284,7 @@ elif app.args.analysis_level == 'participant3':
         mu_file = os.path.join(subject_dir, 'mu.txt')
         tdi_file = os.path.join(subject_dir, 'tdi.mif')
         # compute 5tt
-        run.command('5ttgen fsl ' + t1 + ' ' + five_tt + ' -force')
+        run.command('5ttgen fsl ' + t1 + ' ' + five_tt + ' -t2 ' + t2 + ' -premasked -force')
 
         # perform tractography - act, 5tt, 250 length, chech curvature, -cutoff 0.06, -backtrack
         run.command('tckgen ' + fod + ' ' + tractogram + ' -act ' + five_tt + ' -backtrack -cutoff 0.06 -maxlength 250 -select ' +
