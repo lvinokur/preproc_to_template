@@ -291,7 +291,7 @@ elif app.args.analysis_level == 'participant3':
 
 
         # apply sift
-        run.command('tcksift2 ' + tractogram + ' ' + tck_weights + ' -act ' +  five_tt + ' -out_mu ' + mu_file + ' -force')
+        run.command('tcksift2 ' + tractogram + ' ' + fod + ' ' + tck_weights + ' -act ' +  five_tt + ' -out_mu ' + mu_file + ' -force')
 
         # generate TDI
         with open(mu_file, 'r') as f:
