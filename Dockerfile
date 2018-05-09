@@ -24,7 +24,7 @@ RUN apt-get install -y fsl-mni152-templates
 
 #MRtrix3 setup
 ENV CXX=/usr/bin/g++-5
-RUN git clone https://github.com/MRtrix3/mrtrix3.git mrtrix3 && cd mrtrix3 && git checkout dev && python configure -nogui && NUMBER_OF_PROCESSORS=1 python build && git describe --tags > /mrtrix3_version
+RUN git clone https://github.com/MRtrix3/mrtrix3.git mrtrix3 && cd mrtrix3 && git checkout 4c6a97657930774d62f714c37c324d939bd23204 && python configure -nogui && NUMBER_OF_PROCESSORS=1 python build && git describe --tags > /mrtrix3_version
 
 #RUN echo $'FailOnWarn: 1\n' > /etc/mrtrix.conf
 # Environment variables setup

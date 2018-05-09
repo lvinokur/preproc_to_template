@@ -279,15 +279,18 @@ elif app.args.analysis_level == 'participant3':
         t2 = os.path.join(subject_dir, 'T2w_acpc_dc_restore_brain.mif')
         parc = os.path.join(subject_dir, 'aparc+aseg.mif')
         five_tt = os.path.join(subject_dir, '5TT.mif')
+        five_tt_t2 = os.path.join(subject_dir, '5TT_t2.mif')
         tractogram = os.path.join(subject_dir, 'tractogram.tck')
         tck_weights = os.path.join(subject_dir, 'fod_weights.csv')
         mu_file = os.path.join(subject_dir, 'mu.txt')
         tdi_file = os.path.join(subject_dir, 'tdi.mif')
         # compute 5tt
-        run.command('5ttgen fsl ' + t1 + ' ' + five_tt + ' -t2 ' + t2 + ' -premasked -force')
+        run.command('5ttgen fsl ' + t1 + ' ' + five_tt + ' -premasked -force')
+        run.command('5ttgen fsl ' + t1 + ' -t2 ' +  t2 + ' '+ five_tt + ' -premasked -force')
 
-        # perform tractography - act, 5tt, 250 length, chech curvature, -cutoff 0.06, -backtrack
-        run.command('tckgen ' + fod + ' ' + tractogram + ' -act ' + five_tt + ' -backtrack -cutoff 0.06 -maxlength 250 -select ' +
+
+        # perform tractography - NO ACT, 5tt, 250 length, chech curvature, -cutoff 0.06, -backtrack
+        run.command('tckgen ' + fod + ' ' + tractogram + ' -backtrack -cutoff 0.05 -maxlength 250 -select ' +
                      str(num_tracks) + ' -seed_dynamic ' + fod + ' -force')
 
 
